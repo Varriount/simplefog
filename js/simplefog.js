@@ -1,5 +1,5 @@
 import SimplefogLayer from '../classes/SimplefogLayer.js';
-import sightLayerUpdate from './sightLayerUpdate.js';
+import sightLayerRefresh from './sightLayerRefresh.js';
 import SimplefogMigrations from '../classes/SimplefogMigrations.js';
 import config from './config.js';
 import { simplefogLog } from './helpers.js';
@@ -30,20 +30,20 @@ Hooks.on('canvasInit', () => {
 Hooks.once('ready', () => {
   // Check if any migrations need to be performed
   SimplefogMigrations.check();
-  // Monkeypatch SightLayer to check simplefog vision on updates
+  // Monkeypatch SightLayer to check simplefog vision on refresh
   if (game.data.version.startsWith('0.6')) {
-    const origUpdate = canvas.sight.update;
-    canvas.sight.update = function update(...args) {
-      origUpdate.call(this, ...args);
-      sightLayerUpdate();
+    const origRefresh = canvas.sight.refresh;
+    canvas.sight.refresh = function refresh(...args) {
+      origRefresh.call(this, ...args);
+      sightLayerRefresh();
     };
-    canvas.sight.update();
+    canvas.sight.refresh();
   }
   else {
-    const origUpdate = canvas.sight.refresh;
+    const origRefresh = canvas.sight.refresh;
     canvas.sight.refresh = function refresh(...args) {
-      origUpdate.call(this, ...args);
-      sightLayerUpdate();
+      origRefresh.call(this, ...args);
+      sightLayerRefresh();
     };
     canvas.sight.refresh();
   }
